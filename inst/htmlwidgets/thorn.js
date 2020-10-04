@@ -109,6 +109,14 @@ HTMLWidgets.widget({
               "  return lerp(norm(t, e1, s1), e2, s2);",
               "}",
               "",
+              "vec3 viridis(float u) {",
+              "  return vec3(",
+              "    70.0 - 18.0*u + 449.0*u*u - 3461.0*u*u*u + 6058.0*u*u*u*u - 2847.0*u*u*u*u*u, ",
+              "    4.0 + 320.0*u - 50.0*u*u - 40.0*u*u*u,",
+              "    85.0 + 346.0*u + 119.0*u*u - 5374.0*u*u*u + 15427.0*u*u*u*u - 17627.0*u*u*u*u*u + 7057.0*u*u*u*u*u*u",
+              "  ) / 255.0;",
+              "}",
+              "",
               "vec2 product(vec2 a, vec2 b) {",
               "  return vec2(a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x);",
               "}",
@@ -147,7 +155,7 @@ HTMLWidgets.widget({
               "  vec2 zprime = iScale * mobius(z/iScale, gamma, 1.0 + cos(t));",
               "  float x = zprime.x; float y = zprime.y;",
               "  float ii;    ",
-              "  for(int i = 0; i < 16; i++) {",
+              "  for(int i = 0; i < 32; i++) {",
               "    float nx = x/cos(y) + cx;",
               "    float ny = y/sin(x) + cy;",
               "    x = nx;",
@@ -157,7 +165,7 @@ HTMLWidgets.widget({
               "      break;",
               "    }",
               "  }",
-              "  gl_FragColor = vec4(vec3(ii/16.0), 1.0);",
+              "  gl_FragColor = vec4(viridis(ii/32.0), 1.0);",
               "}"
             ].join("\n");
             break;
