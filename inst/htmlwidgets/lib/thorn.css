@@ -1,0 +1,11 @@
+.thorn {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.thorn canvas {
+  position: absolute;
+  display: block;
+  width: 100%;
+}

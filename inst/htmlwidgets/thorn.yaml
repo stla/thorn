@@ -1,0 +1,13 @@
+dependencies:
+ - name: pixijs
+   version: 5.1.6
+   src: htmlwidgets/lib
+   script: pixi.min.js
+ - name: hamster
+   version: 0.0.0
+   src: htmlwidgets/lib
+   script: hamster.min.js
+ - name: thorn
+   version: 0.0.0
+   src: htmlwidgets/lib
+   stylesheet: thorn.css
