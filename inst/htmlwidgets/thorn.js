@@ -279,6 +279,70 @@ HTMLWidgets.widget({
               "}"
             ].join("\n");
             break;
+
+          case "biomorph3":
+            fragmentShader = [
+              "uniform vec2 iResolution;",
+              "uniform float iGlobalTime;",
+              "uniform float iFixedTime;",
+              "uniform bool iAnim;",
+              "uniform vec2 iMouse;",
+              "uniform float xmin;",
+              "uniform float xmax;",
+              "uniform float ymin;",
+              "uniform float ymax;",
+              "",
+              "vec3 hsv2rgb(vec3 c) {",
+              "  vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);",
+              "  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);",
+              "  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);",
+              "}",
+              "",
+              "float pi = 3.1415926535897932384626433832795;",
+              "",
+              "vec3 pair2hsv(vec2 z) {",
+              "  float h = (atan(z.y, z.x) + pi) / 2.0 / pi;",
+              "  float l = sqrt(z.x*z.x + z.y*z.y);",
+              "  float s = (1.0 + sin(2.0*pi*log(1.0+l))) / 2.0;",
+              "  float v = (1.0 + cos(2.0*pi*log(1.0+l))) / 2.0;",
+              "  return vec3(h, s, v);",
+              "}",
+              "",
+              "vec2 f(vec2 z) {",
+              "  float re = z.x*z.x*z.x*z.x + z.y*z.y*z.y*z.y - 6.0*z.x*z.x*z.y*z.y;",
+              "  float im = 4.0*(z.y*z.y*z.y*z.x - z.x*z.x*z.x*z.y);",
+              "  vec2 cz4 = vec2(re, im);",
+              "  return 2.0/3.0 * (cz4-2.0);",
+              "}",
+              "",
+              "float R = 100.0;",
+              "",
+              "vec3 g(vec2 z, float c, float d, float alpha, float beta) {",
+              "  vec3 rgb = vec3(0.0,0.0,0.0);",
+              "  for(int k=1; k <= 15; k++) {",
+              "    vec2 w = beta*(f(z) + c) + (1.0 - beta)*z;",
+              "    z = alpha*(f(w) + d) + (1.0 - alpha)*w;",
+              "    if(z.x*z.x + z.y*z.y > R) {",
+              "        rgb = hsv2rgb(pair2hsv(z));",
+              "        break;",
+              "    }",
+              "  }",
+              "  return rgb;",
+              "}",
+              "",
+              "void main(void) {",
+              "  float c = iMouse.x / iResolution.x;",
+              "  float d = iMouse.y / iResolution.y;",
+              "  float alpha0 = iAnim ? cos(iGlobalTime) : cos(iFixedTime);",
+              "  float beta0 = iAnim ? sin(iGlobalTime) : sin(iFixedTime);",
+              "  vec2 z = vec2(",
+              "    (xmax - xmin) * gl_FragCoord.x/iResolution.x + xmin,",
+              "    (ymax - ymin) * gl_FragCoord.y/iResolution.y + ymin",
+              "  );",
+              "  gl_FragColor = vec4(g(z, c, d, (1.0+alpha0)/2.0, (1.0+beta0)/2.0), 1.0);",
+              "}"
+            ].join("\n");
+            break;
         }
 
         var filter = new PIXI.Filter(null, fragmentShader);
@@ -301,6 +365,12 @@ HTMLWidgets.widget({
           filter.uniforms.y0 = (ymin + ymax) / 2;
           filter.uniforms.sx = (xmax - xmin) / app.screen.width;
           filter.uniforms.sy = (ymax - ymin) / app.screen.height;
+        } else if(x.shader === "biomorph3") {
+          var xmin = -2, xmax = 2, ymin = -2, ymax = 2;
+          filter.uniforms.xmin = xmin;
+          filter.uniforms.xmax = xmax;
+          filter.uniforms.ymin = ymin;
+          filter.uniforms.ymax = ymax;
         }
 
         el.onmousemove = function(evt) {
