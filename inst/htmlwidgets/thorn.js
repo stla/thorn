@@ -7,6 +7,7 @@ HTMLWidgets.widget({
     // TODO: define shared variables for this instance
 
     return {
+
       renderValue: function(x) {
 
         var app = new PIXI.Application({
@@ -224,6 +225,60 @@ HTMLWidgets.widget({
               "}"
             ].join("\n");
             break;
+
+          case "sweet":
+            fragmentShader = [
+              "uniform vec2 iResolution;",
+              "uniform float iGlobalTime;",
+              "uniform float iFixedTime;",
+              "uniform bool iAnim;",
+              "uniform vec2 iMouse;",
+              "uniform float x0;",
+              "uniform float y0;",
+              "uniform float sx;",
+              "uniform float sy;",
+              "",
+              "vec3 hsv2rgb(vec3 c) {",
+              "  vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);",
+              "  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);",
+              "  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);",
+              "}",
+              "",
+              "float pi = 3.1415926535897932384626433832795;",
+              "",
+              "vec3 pair2hsv(vec2 z, float h0) {",
+              "  float h = mod(h0 + (atan(z.y, z.x) + pi) / 2.0 / pi, 1.0);",
+              "  float l = sqrt(z.x*z.x + z.y*z.y);",
+              "  float s = (1.0 + sin(2.0*pi*log(1.0+l))) / 2.0;",
+              "  float v = (1.0 + cos(2.0*pi*log(1.0+l))) / 2.0;",
+              "  return vec3(h, s, v);",
+              "}",
+              "",
+              "vec3 henon(float x, float y, float A, float B, float mu, float h0) {",
+              "  float r2; float oldx;",
+              "  for(int k = 0; k < 500; k++) {",
+              "    oldx = x;",
+              "    x = A - x*x + B*y;",
+              "    y = A - y*y + B*(mu*x+(1.0-mu)*oldx);",
+              "    r2 = x*x + y*y;",
+              "    if(r2 > 10000.0) {",
+              "      break;",
+              "    }",
+              "  }",
+              "  return hsv2rgb(pair2hsv(vec2(x,y), h0));",
+              "}",
+              "",
+              "void main(void) {",
+              "  float A = 1.0 + 4.0 * iMouse.x / iResolution.x;",
+              "  float B = 1.0 + 2.0 * iMouse.y / iResolution.y;",
+              "  float x = sx*(gl_FragCoord.x - iResolution.x/2.0) + x0;",
+              "  float y = sy*(gl_FragCoord.y - iResolution.y/2.0) + y0;",
+              "  float h0 = iAnim ? cos(iGlobalTime) : cos(iFixedTime);",
+              "  float mu = (1.0 + h0) / 2.0;",
+              "  gl_FragColor = vec4(henon(x, y, A, B, mu, h0), 1.0);",
+              "}"
+            ].join("\n");
+            break;
         }
 
         var filter = new PIXI.Filter(null, fragmentShader);
@@ -231,10 +286,21 @@ HTMLWidgets.widget({
         filter.uniforms.iGlobalTime = 0;
         filter.uniforms.iFixedTime = 0;
         filter.uniforms.iAnim = false;
-        filter.uniforms.iMouse = { x: 0, y: 0 };
+        filter.uniforms.iMouse = {
+          x: app.screen.width / 2,
+          y: app.screen.height / 2
+        };
 
         if(x.shader === "thorn" || x.shader === "thorn-color") {
           filter.uniforms.iScale = 1;
+        }
+
+        if(x.shader === "sweet") {
+          var xmin = -4, xmax = 4, ymin = -3, ymax = 5;
+          filter.uniforms.x0 = (xmin + xmax) / 2;
+          filter.uniforms.y0 = (ymin + ymax) / 2;
+          filter.uniforms.sx = (xmax - xmin) / app.screen.width;
+          filter.uniforms.sy = (ymax - ymin) / app.screen.height;
         }
 
         el.onmousemove = function(evt) {
@@ -246,8 +312,8 @@ HTMLWidgets.widget({
           filter.uniforms.iFixedTime = filter.uniforms.iGlobalTime;
         };
 
-        var hamster = Hamster(el);
         if(x.shader === "thorn" || x.shader === "thorn-color") {
+          var hamster = Hamster(el);
           var factor0 = 1.001;
           hamster.wheel(function(event, delta, deltaX, deltaY) {
             var factor = Math.max(0.1, Math.pow(factor0, deltaY));
