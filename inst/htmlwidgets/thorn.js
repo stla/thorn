@@ -374,7 +374,11 @@ HTMLWidgets.widget({
         }
 
         el.onmousemove = function(evt) {
-          filter.uniforms.iMouse = { x: evt.clientX, y: evt.clientY };
+          var dims = evt.target.getBoundingClientRect();
+          filter.uniforms.iMouse = {
+            x: evt.offsetX / dims.width * 1000,
+            y: evt.offsetY / dims.height * 1000
+          };
         };
 
         el.onclick = function(evt) {
