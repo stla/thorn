@@ -2,10 +2,50 @@
 % Please edit documentation in R/thorn.R
 \name{thorn}
 \alias{thorn}
-\title{<Add Title>}
+\title{HTML widget displaying a shader}
 \usage{
-thorn(message, width = NULL, height = NULL, elementId = NULL)
+thorn(shader, width = NULL, height = NULL, elementId = NULL)
+}
+\arguments{
+\item{shader}{the name of the shader, one of \code{"thorn"},
+\code{"thorn-color"}, \code{"ikeda"}, \code{"sweet"}, \code{"biomorph1"},
+\code{"biomorph2"}, or \code{"biomorph3"}}
+
+\item{width, height}{a valid CSS measurement (like \code{"100\%"},
+\code{"400px"}, \code{"auto"}) or a number, which will be coerced to a
+string and have \code{"px"} appended}
+
+\item{elementId}{a HTML id for the widget}
 }
 \description{
-<Add Description>
+Creates a HTML widget displaying a shader.
+}
+\examples{
+library(thorn)
+thorn("ikeda") # click on the shader to animate it
+
+# four shaders: ####
+library(htmltools)
+
+hw1 <- thorn("thorn-color", width = "50vw", height = "50vh")
+hw2 <- thorn("ikeda", width = "50vw", height = "50vh")
+hw3 <- thorn("sweet", width = "50vw", height = "50vh")
+hw4 <- thorn("biomorph3", width = "50vw", height = "50vh")
+
+browsable(
+  withTags(
+    div(
+      div(
+        style = "position:absolute; top:0;",
+        div(hw1, style="position:fixed; left:0;"),
+        div(hw2, style="position:fixed; left:50vw;")
+      ),
+      div(
+        style = "position:absolute; top:50vh;",
+        div(hw3, style="position:fixed; left:0;"),
+        div(hw4, style="position:fixed; left:50vw;")
+      )
+    )
+  )
+)
 }

@@ -1,10 +1,46 @@
-#' <Add Title>
+#' HTML widget displaying a shader
 #'
-#' <Add Description>
+#' @description Creates a HTML widget displaying a shader.
+#'
+#' @param shader the name of the shader, one of \code{"thorn"},
+#'   \code{"thorn-color"}, \code{"ikeda"}, \code{"sweet"}, \code{"biomorph1"},
+#'   \code{"biomorph2"}, or \code{"biomorph3"}
+#' @param width,height a valid CSS measurement (like \code{"100\%"},
+#'   \code{"400px"}, \code{"auto"}) or a number, which will be coerced to a
+#'   string and have \code{"px"} appended
+#' @param elementId a HTML id for the widget
 #'
 #' @import htmlwidgets
 #'
 #' @export
+#'
+#' @examples library(thorn)
+#' thorn("ikeda") # click on the shader to animate it
+#'
+#' # four shaders: ####
+#' library(htmltools)
+#'
+#' hw1 <- thorn("thorn-color", width = "50vw", height = "50vh")
+#' hw2 <- thorn("ikeda", width = "50vw", height = "50vh")
+#' hw3 <- thorn("sweet", width = "50vw", height = "50vh")
+#' hw4 <- thorn("biomorph3", width = "50vw", height = "50vh")
+#'
+#' browsable(
+#'   withTags(
+#'     div(
+#'       div(
+#'         style = "position:absolute; top:0;",
+#'         div(hw1, style="position:fixed; left:0;"),
+#'         div(hw2, style="position:fixed; left:50vw;")
+#'       ),
+#'       div(
+#'         style = "position:absolute; top:50vh;",
+#'         div(hw3, style="position:fixed; left:0;"),
+#'         div(hw4, style="position:fixed; left:50vw;")
+#'       )
+#'     )
+#'   )
+#' )
 thorn <- function(
   shader,
   width = NULL, height = NULL,
@@ -35,25 +71,27 @@ thorn <- function(
   )
 }
 
-#' Shiny bindings for thorn
+#' Shiny bindings for \code{thorn}
 #'
-#' Output and render functions for using thorn within Shiny
+#' Output and render functions for using \code{\link{thorn}} within Shiny
 #' applications and interactive Rmd documents.
 #'
 #' @param outputId output variable to read from
-#' @param width,height Must be a valid CSS unit (like \code{'100\%'},
-#'   \code{'400px'}, \code{'auto'}) or a number, which will be coerced to a
-#'   string and have \code{'px'} appended.
-#' @param expr An expression that generates a thorn
-#' @param env The environment in which to evaluate \code{expr}.
-#' @param quoted Is \code{expr} a quoted expression (with \code{quote()})? This
-#'   is useful if you want to save an expression in a variable.
+#' @param width,height a valid CSS measurement (like \code{"100\%"},
+#'   \code{"400px"}, \code{"auto"}) or a number, which will be coerced to a
+#'   string and have \code{"px"} appended
+#' @param expr an expression that generates a shader created with
+#'   \code{\link{thorn}}
+#' @param env the environment in which to evaluate \code{expr}
+#' @param quoted logical, whether \code{expr} is a quoted expression
 #'
 #' @name thorn-shiny
 #'
 #' @export
-thornOutput <- function(outputId, width = '100%', height = '400px'){
-  htmlwidgets::shinyWidgetOutput(outputId, 'thorn', width, height, package = 'thorn')
+thornOutput <- function(outputId, width = "100%", height = "100%"){
+  htmlwidgets::shinyWidgetOutput(
+    outputId, "thorn", width, height, package = "thorn"
+  )
 }
 
 #' @rdname thorn-shiny
