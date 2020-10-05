@@ -81,7 +81,8 @@ ui <- fluidPage(
             "biomorph2",
             "biomorph3",
             "sweet",
-            "apollony"
+            "apollony",
+            "smoke"
           )
         )
       )
