@@ -280,6 +280,62 @@ HTMLWidgets.widget({
             ].join("\n");
             break;
 
+          case "biomorph1":
+            fragmentShader = [
+              "uniform vec2 iResolution;",
+              "uniform vec2 iMouse;",
+              "",
+              "vec3 hsv2rgb(vec3 c){",
+              "  vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);",
+              "  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);",
+              "  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);",
+              "}",
+              "",
+              "float pi = 3.1415926535897932384626433832795;",
+              "",
+              "vec3 pair2hsv(vec2 z){",
+              "  float h = (atan(z.y, z.x) + pi) / 2.0 / pi;",
+              "  float l = sqrt(z.x*z.x + z.y*z.y);",
+              "  float x = 2.0 * pi * log(1.0 + l);",
+              "  float s = (1.0 + sin(x)) / 2.0;",
+              "  float v = (1.0 + cos(x)) / 2.0;",
+              "  return vec3(h, s, v);",
+              "}",
+              "",
+              "vec2 f(vec2 z){",
+              "  float re = z.x*z.x*z.x - 3.0*z.x*z.y*z.y;",
+              "  float im = -z.y*z.y*z.y + 3.0*z.x*z.x*z.y;",
+              "  vec2 z3 = vec2(re, im);",
+              "  return 2.0/3.0 * (z3-2.0);",
+              "}",
+              "",
+              "float R = 100.0;",
+              "float alpha = 0.7;",
+              "float beta = 0.8;",
+              "",
+              "vec3 g(vec2 z, float c, float d){",
+              "  vec3 rgb = vec3(0.0,0.0,0.0);",
+              "  for(int k=1; k <= 15; k++){",
+              "    vec2 w = beta*(f(z) + c) + (1.0 - beta)*z;",
+              "    z = alpha*(f(w) + d) + (1.0 - alpha)*w;",
+              "    if(z.x*z.x + z.y*z.y > R){",
+              "      rgb = hsv2rgb(pair2hsv(z));",
+              "      break;",
+              "    }",
+              "  }",
+              "  return rgb;",
+              "}",
+              "",
+              "void main(void){",
+              "  float c = iMouse.x / iResolution.x;",
+              "  float d = iMouse.y / iResolution.y;",
+              "  float x = 4.0 * gl_FragCoord.x / iResolution.x - 2.0;",
+              "  float y = 4.0 * gl_FragCoord.y / iResolution.y - 2.0;",
+              "  gl_FragColor = vec4(g(vec2(x, y), c, d), 1.0);",
+              "}"
+            ].join("\n");
+            break;
+
           case "biomorph3":
             fragmentShader = [
               "uniform vec2 iResolution;",
@@ -347,9 +403,11 @@ HTMLWidgets.widget({
 
         var filter = new PIXI.Filter(null, fragmentShader);
         filter.uniforms.iResolution = [app.screen.width, app.screen.height];
-        filter.uniforms.iGlobalTime = 0;
-        filter.uniforms.iFixedTime = 0;
-        filter.uniforms.iAnim = false;
+        if(x.shader !== "biomorph1") {
+          filter.uniforms.iGlobalTime = 0;
+          filter.uniforms.iFixedTime = 0;
+          filter.uniforms.iAnim = false;
+        }
         filter.uniforms.iMouse = {
           x: app.screen.width / 2,
           y: app.screen.height / 2
@@ -381,10 +439,12 @@ HTMLWidgets.widget({
           };
         };
 
-        el.onclick = function(evt) {
-          filter.uniforms.iAnim = !filter.uniforms.iAnim;
-          filter.uniforms.iFixedTime = filter.uniforms.iGlobalTime;
-        };
+        if(x.shader !== "biomorph1") {
+          el.onclick = function(evt) {
+            filter.uniforms.iAnim = !filter.uniforms.iAnim;
+            filter.uniforms.iFixedTime = filter.uniforms.iGlobalTime;
+          };
+        }
 
         if(x.shader === "thorn" || x.shader === "thorn-color") {
           var hamster = Hamster(el);
@@ -409,11 +469,13 @@ HTMLWidgets.widget({
         }
         window.addEventListener("resize", onresize, false);
 
-        var startTime = Date.now();
-        app.ticker.add(function(delta) {
-          var currentTime = Date.now();
-          filter.uniforms.iGlobalTime = (currentTime - startTime) * 0.00025;
-        });
+        if(x.shader !== "biomorph1") {
+          var startTime = Date.now();
+          app.ticker.add(function(delta) {
+            var currentTime = Date.now();
+            filter.uniforms.iGlobalTime = (currentTime - startTime) * 0.00025;
+          });
+        }
 
       },
 
