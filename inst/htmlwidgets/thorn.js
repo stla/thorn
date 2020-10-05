@@ -464,19 +464,125 @@ HTMLWidgets.widget({
               "}"
             ].join("\n");
             break;
+
+          case "apollony":
+            fragmentShader = [
+              "uniform vec2 iResolution;",
+              "uniform float iGlobalTime;",
+              "uniform float iFixedTime;",
+              "uniform bool iAnim;",
+              "uniform float xmin;",
+              "uniform float xmax;",
+              "uniform float ymin;",
+              "uniform float ymax;",
+              "",
+              "const float pi = 3.1415926535897932384626433832795;",
+              "",
+              "// complex numbers",
+              "vec2 product(vec2 a, vec2 b) {",
+              "  return vec2(a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x);",
+              "}",
+              "vec2 conjugate(vec2 a) {",
+              "  return vec2(a.x, -a.y);",
+              "}",
+              "vec2 divide(vec2 a, vec2 b) {",
+              "  return vec2(a.x*b.x+a.y*b.y, a.y*b.x-a.x*b.y) / (b.x*b.x+b.y*b.y);",
+              "}",
+              "",
+              "vec2 mobius(vec2 z, vec2 gamma, float t) {",
+              "  float g2 = gamma.x*gamma.x + gamma.y*gamma.y;",
+              "  float h = sqrt(1.0 - g2);",
+              "  vec2 d2 = pow(h, t) * vec2(cos(t*pi/2.0), sin(t*pi/2.0));",
+              "  vec2 d1 = conjugate(d2);",
+              "  vec2 a = vec2(d1.x, -d1.y/h);",
+              "  vec2 b = d2.y * gamma / h;",
+              "  vec2 c = conjugate(b);",
+              "  vec2 d = conjugate(a);",
+              "  return divide(product(a, z) + b, product(c, z) + d);",
+              "}",
+              "",
+              "const float sqrt2 = sqrt(2.0);",
+              "const vec2 c1 = vec2(sqrt2, 0.0);",
+              "const vec2 c2 = vec2(0.0, sqrt2);",
+              "const vec2 c3 = vec2(-sqrt2, 0.0);",
+              "const vec2 c4 = vec2(0.0, -sqrt2);",
+              "const vec2 c5 = vec2(0.0, 0.0);",
+              "const float R2 = 1.0;",
+              "const float r2 = (sqrt2-1.0)*(sqrt2-1.0);",
+              "",
+              "float squaredLength(vec2 v) {",
+              "  return v.x*v.x + v.y*v.y;",
+              "}",
+              "",
+              "vec2 iota(vec2 pole, float k, vec2 M) {",
+              "  vec2 pole_M = M - pole;",
+              "  return pole + k/squaredLength(pole_M) * pole_M;",
+              "}",
+              "",
+              "bool contains(vec2 c, float r2, vec2 M) {",
+              "  return squaredLength(M-c) < r2;",
+              "}",
+              "",
+              "vec3 color(vec2 M, int itr) {",
+              "  float s = 0.08 * (4.0-length(M)) + float(itr); ",
+              "  float arg = pi * s / 20.0 - 3.74;",
+              "  return sin(vec3(arg - pi, arg - 3.5*pi, arg - 3.6*pi)) * 0.49 + 0.5;",
+              "}",
+              "",
+              "vec3 g(vec2 M) {",
+              "  int itr = 0;",
+              "  for(int i=0; i < 50; i++) {",
+              "    if(contains(c1, R2, M)) {",
+              "      M = iota(c1, R2, M);",
+              "      itr += 1;",
+              "    }else if(contains(c2, R2, M)) {",
+              "      M = iota(c2, R2, M);",
+              "      itr += 1;",
+              "    }else if(contains(c3, R2, M)) {",
+              "      M = iota(c3, R2, M);",
+              "      itr += 1;",
+              "    }else if(contains(c4, R2, M)) {",
+              "      M = iota(c4, R2, M);",
+              "      itr += 1;",
+              "    }else if(contains(c5, r2, M)) {",
+              "      M = iota(c5, r2, M);",
+              "      itr += 1;",
+              "    }else{",
+              "      break;",
+              "    }",
+              "  }",
+              "  return color(M, itr);",
+              "}",
+              "",
+              "void main(void) {",
+              "  float t = 1.0 + (iAnim ? sin(iGlobalTime) : sin(iFixedTime));",
+              "  vec2 z0 = vec2(",
+              "    (xmax - xmin) * gl_FragCoord.x/iResolution.x + xmin,",
+              "    (ymax - ymin) * gl_FragCoord.y/iResolution.y + ymin",
+              "  );",
+              "  vec2 z = mobius(z0, vec2(0.8,0.2), t);",
+              "  gl_FragColor = vec4(g(z), 1.0);",
+              "}"
+            ].join("\n");
+            break;
         }
 
         var filter = new PIXI.Filter(null, fragmentShader);
-        filter.uniforms.iResolution = [app.screen.width, app.screen.height];
+        filter.uniforms.iResolution = {
+          x: app.screen.width,
+          y: app.screen.height
+        };
         if(x.shader !== "biomorph1") {
           filter.uniforms.iGlobalTime = 0;
           filter.uniforms.iFixedTime = 0;
           filter.uniforms.iAnim = false;
         }
-        filter.uniforms.iMouse = {
-          x: app.screen.width / 2,
-          y: app.screen.height / 2
-        };
+        if(x.shader !== "apollony") {
+          filter.uniforms.iMouse = {
+            x: app.screen.width / 2,
+            y: app.screen.height / 2
+          };
+        }
 
         if(x.shader === "thorn" || x.shader === "thorn-color") {
           filter.uniforms.iScale = 1;
@@ -494,15 +600,23 @@ HTMLWidgets.widget({
           filter.uniforms.xmax = xmax;
           filter.uniforms.ymin = ymin;
           filter.uniforms.ymax = ymax;
+        } else if(x.shader === "apollony") {
+          var xmin = -1.25, xmax = 1.25, ymin = -1.25, ymax = 1.25;
+          filter.uniforms.xmin = xmin;
+          filter.uniforms.xmax = xmax;
+          filter.uniforms.ymin = ymin;
+          filter.uniforms.ymax = ymax;
         }
 
-        el.onmousemove = function(evt) {
-          var dims = evt.target.getBoundingClientRect();
-          filter.uniforms.iMouse = {
-            x: evt.offsetX / dims.width * 1000,
-            y: evt.offsetY / dims.height * 1000
+        if(x.shader !== "apollony") {
+          el.onmousemove = function(evt) {
+            var dims = evt.target.getBoundingClientRect();
+            filter.uniforms.iMouse = {
+              x: evt.offsetX / dims.width * 1000,
+              y: evt.offsetY / dims.height * 1000
+            };
           };
-        };
+        }
 
         if(x.shader !== "biomorph1") {
           el.onclick = function(evt) {
@@ -518,6 +632,28 @@ HTMLWidgets.widget({
             var factor = Math.max(0.1, Math.pow(factor0, deltaY));
             filter.uniforms.iScale /= factor;
           });
+        } else if(x.shader === "apollony") {
+          var hamster = Hamster(el);
+          var zoom0 = 1.001;
+          hamster.wheel(function(event, delta, deltaX, deltaY) {
+            var ex = event.originalEvent.clientX;
+            var ey = event.originalEvent.clientY;
+            var zoom = Math.pow(zoom0, deltaY);
+            var sx = (filter.uniforms.xmax - filter.uniforms.xmin) / filter.uniforms.iResolution.x;
+            var sy = (filter.uniforms.ymax - filter.uniforms.ymin) / filter.uniforms.iResolution.y;
+            var dx = ex - filter.uniforms.iResolution.x / 2;
+            var dy = filter.uniforms.iResolution.y / 2 - ey;
+            sx /= zoom;
+            sy /= zoom;
+            var midx = (filter.uniforms.xmin + filter.uniforms.xmax) / 2 + (zoom - 1) * dx * sx;
+            var midy = (filter.uniforms.ymin + filter.uniforms.ymax) / 2 + (zoom - 1) * dy * sy;
+            var rangex = (filter.uniforms.xmax - filter.uniforms.xmin) / zoom;
+            var rangey = (filter.uniforms.ymax - filter.uniforms.ymin) / zoom;
+            filter.uniforms.xmax = (rangex + 2 * midx) / 2;
+            filter.uniforms.ymax = (rangey + 2 * midy) / 2;
+            filter.uniforms.xmin = filter.uniforms.xmax - rangex;
+            filter.uniforms.ymin = filter.uniforms.ymax - rangey;
+          });
         }
 
         var container = new PIXI.Container();
@@ -530,7 +666,10 @@ HTMLWidgets.widget({
         function onresize(event) {
           if(app.resize) app.resize();
           container.filterArea = app.screen;
-          filter.uniforms.iResolution = [app.screen.width, app.screen.height];
+          filter.uniforms.iResolution = {
+            x: app.screen.width,
+            y: app.screen.height
+          };
         }
         window.addEventListener("resize", onresize, false);
 
