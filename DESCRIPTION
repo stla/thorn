@@ -4,11 +4,12 @@ Title: Some Shaders
 Version: 0.1.0
 Author: Stéphane Laurent
 Maintainer: Stéphane Laurent <laurent_step@outlook.fr>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Creates some 'WebGL' shaders. They can be used as the background of a 'Shiny' app. They also can be visualized in the 'RStudio' viewer pane or included in 'Rmd' documents, but this is pretty useless, besides contemplating them.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: htmlwidgets
 Suggests: shiny, htmltools
+URL: https://github.com/stla/thorn
+BugReports: https://github.com/stla/thorn/issues
 RoxygenNote: 7.1.1
