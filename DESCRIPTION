@@ -2,8 +2,20 @@ Package: thorn
 Type: Package
 Title: Some Shaders
 Version: 0.1.0
-Author: Stéphane Laurent
-Maintainer: Stéphane Laurent <laurent_step@outlook.fr>
+Authors@R: c(
+    person(
+      "Stéphane", "Laurent", role = c("aut", "cre"), 
+      email = "laurent_step@outlook.fr"
+    ),
+    person(
+      "Scott", "Boyle", role = c("ctb", "cph"), 
+      comment = "'Hamster.js' library"
+    ),
+    person(
+      list("Mathew", "Chad"), list("Groves", "Engler"), role = c("ctb", "cph"), 
+      comment = "'PixiJS' library"
+    )
+  )
 Description: Creates some 'WebGL' shaders. They can be used as the background of a 'Shiny' app. They also can be visualized in the 'RStudio' viewer pane or included in 'Rmd' documents, but this is pretty useless, besides contemplating them.
 License: GPL-3
 Encoding: UTF-8
