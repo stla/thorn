@@ -28,3 +28,78 @@ string and have \code{"px"} appended}
 Output and render functions for using \code{\link{thorn}} within Shiny
 applications and interactive Rmd documents.
 }
+\examples{
+# use a shader as the background of a Shiny app ####
+library(thorn)
+library(shiny)
+
+ui <- fluidPage(
+  thornOutput("thorn", width = "100\%", height = "100\%"),
+  br(),
+  sidebarLayout(
+    sidebarPanel(
+      sliderInput(
+        "slider", "Slide me",
+        value = 10, min = 0, max = 20
+      ),
+      selectInput(
+        "select", "Select me", choices = c("Choice 1", "Choice 2")
+      )
+    ),
+    mainPanel()
+  )
+)
+
+server <- function(input, output){
+
+  output[["thorn"]] <- renderThorn({
+    thorn("biomorph2")
+  })
+
+}
+
+if(interactive()){
+  shinyApp(ui, server)
+}
+
+# all available shaders ####
+library(thorn)
+library(shiny)
+
+ui <- fluidPage(
+  br(),
+  sidebarLayout(
+    sidebarPanel(
+      wellPanel(
+        radioButtons(
+          "shader", "Shader",
+          choices = c(
+            "thorn",
+            "thorn-color",
+            "ikeda",
+            "biomorph1",
+            "biomorph2",
+            "biomorph3",
+            "sweet"
+          )
+        )
+      )
+    ),
+    mainPanel(
+      thornOutput("shader", width = "calc(100\% - 15px)", height = "400px")
+    )
+  )
+)
+
+server <- function(input, output){
+
+  output[["shader"]] <- renderThorn({
+    thorn(input[["shader"]])
+  })
+
+}
+
+if(interactive()){
+  shinyApp(ui, server)
+}
+}
