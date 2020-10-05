@@ -4,6 +4,10 @@
 
 ![](https://thumbs.gfycat.com/PoisedBriskGypsymoth-size_restricted.gif)
 
+**smoke** 
+
+![](https://thumbs.gfycat.com/UnhappyIllustriousJay-size_restricted.gif)
+
 **ikeda** 
 
 ![](https://thumbs.gfycat.com/MeaslyImprobableAtlanticspadefish-size_restricted.gif)
