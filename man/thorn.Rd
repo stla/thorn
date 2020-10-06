@@ -23,8 +23,9 @@ Creates a HTML widget displaying a shader.
 \examples{
 library(thorn)
 thorn("ikeda") # click on the shader to animate it
+thorn("thorn") # you can also use the mouse wheel on this one
 
-# four shaders: ####
+# four shaders ####
 library(htmltools)
 
 hw1 <- thorn("thorn-color", width = "50vw", height = "50vh")
