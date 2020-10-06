@@ -4,6 +4,10 @@
 
 ![](https://thumbs.gfycat.com/PoisedBriskGypsymoth-size_restricted.gif)
 
+**thorn-color** 
+
+![](https://thumbs.gfycat.com/TheseNervousGelding-size_restricted.gif)
+
 **smoke** 
 
 ![](https://thumbs.gfycat.com/UnhappyIllustriousJay-size_restricted.gif)
