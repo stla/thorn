@@ -4,7 +4,8 @@
 #'
 #' @param shader the name of the shader, one of \code{"thorn"},
 #'   \code{"thorn-color"}, \code{"ikeda"}, \code{"sweet"}, \code{"biomorph1"},
-#'   \code{"biomorph2"}, \code{"biomorph3"}, \code{"apollony"}, \code{"smoke"}
+#'   \code{"biomorph2"}, \code{"biomorph3"}, \code{"apollony"}, \code{"smoke"},
+#'   \code{"plasma"}
 #' @param width,height a valid CSS measurement (like \code{"100\%"},
 #'   \code{"400px"}, \code{"auto"}) or a number, which will be coerced to a
 #'   string and have \code{"px"} appended
@@ -59,7 +60,8 @@ thorn <- function(
       "biomorph3",
       "sweet",
       "apollony",
-      "smoke"
+      "smoke",
+      "plasma"
     ))
   )
 

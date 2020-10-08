@@ -1,6 +1,6 @@
 # thorn 0.2.0
 
-Added two shaders: 'apollony' and 'smoke'.
+Added three shaders: 'apollony', 'plasma', and 'smoke'.
 
 # thorn 0.1.0
 
