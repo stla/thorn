@@ -1,5 +1,7 @@
 # thorn
 
+### Some shaders.
+
 **thorn** 
 
 ![](https://thumbs.gfycat.com/PoisedBriskGypsymoth-size_restricted.gif)
@@ -23,3 +25,8 @@
 **apollony** 
 
 ![](https://thumbs.gfycat.com/PhonyRareLaughingthrush-size_restricted.gif)
+
+
+A shader can be used as the background of a Shiny app:
+
+![](https://thumbs.gfycat.com/ReflectingCandidFruitbat-size_restricted.gif)
