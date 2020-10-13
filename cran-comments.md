@@ -1,3 +1,7 @@
+## Release summary
+
+This is a resubmission. I elaborated the title of the package.
+
 ## Test environments
 
 * ubuntu 18.04, R 3.6.3

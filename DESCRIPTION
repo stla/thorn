@@ -1,6 +1,6 @@
 Package: thorn
 Type: Package
-Title: Some Shaders
+Title: 'HTMLwidgets' Displaying Some 'WebGL' Shaders
 Version: 0.1.0
 Authors@R: c(
     person(
