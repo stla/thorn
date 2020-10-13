@@ -1,6 +1,7 @@
 ## Release summary
 
-This is a resubmission. I elaborated the title of the package.
+This is a resubmission. The previous submission has been archived because there 
+was a missing 'if(interactive())' in an example. So I added it.
 
 ## Test environments
 
