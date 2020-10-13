@@ -25,22 +25,24 @@
 #' hw3 <- thorn("sweet", width = "50vw", height = "50vh")
 #' hw4 <- thorn("biomorph3", width = "50vw", height = "50vh")
 #'
-#' browsable(
-#'   withTags(
-#'     div(
+#' if(interactive()){
+#'   browsable(
+#'     withTags(
 #'       div(
-#'         style = "position:absolute; top:0;",
-#'         div(hw1, style="position:fixed; left:0;"),
-#'         div(hw2, style="position:fixed; left:50vw;")
-#'       ),
-#'       div(
-#'         style = "position:absolute; top:50vh;",
-#'         div(hw3, style="position:fixed; left:0;"),
-#'         div(hw4, style="position:fixed; left:50vw;")
+#'         div(
+#'           style = "position:absolute; top:0;",
+#'           div(hw1, style="position:fixed; left:0;"),
+#'           div(hw2, style="position:fixed; left:50vw;")
+#'         ),
+#'         div(
+#'           style = "position:absolute; top:50vh;",
+#'           div(hw3, style="position:fixed; left:0;"),
+#'           div(hw4, style="position:fixed; left:50vw;")
+#'         )
 #'       )
 #'     )
 #'   )
-#' )
+#' }
 thorn <- function(
   shader,
   width = NULL, height = NULL,
