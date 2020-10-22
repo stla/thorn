@@ -464,25 +464,288 @@ HTMLWidgets.widget({
               "}"
             ].join("\n");
             break;
+
+          case "apollony":
+            fragmentShader = [
+              "uniform vec2 iResolution;",
+              "uniform float iGlobalTime;",
+              "uniform float iFixedTime;",
+              "uniform bool iAnim;",
+              "uniform float xmin;",
+              "uniform float xmax;",
+              "uniform float ymin;",
+              "uniform float ymax;",
+              "",
+              "const float pi = 3.1415926535897932384626433832795;",
+              "",
+              "// complex numbers",
+              "vec2 product(vec2 a, vec2 b) {",
+              "  return vec2(a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x);",
+              "}",
+              "vec2 conjugate(vec2 a) {",
+              "  return vec2(a.x, -a.y);",
+              "}",
+              "vec2 divide(vec2 a, vec2 b) {",
+              "  return vec2(a.x*b.x+a.y*b.y, a.y*b.x-a.x*b.y) / (b.x*b.x+b.y*b.y);",
+              "}",
+              "",
+              "vec2 mobius(vec2 z, vec2 gamma, float t) {",
+              "  float g2 = gamma.x*gamma.x + gamma.y*gamma.y;",
+              "  float h = sqrt(1.0 - g2);",
+              "  vec2 d2 = pow(h, t) * vec2(cos(t*pi/2.0), sin(t*pi/2.0));",
+              "  vec2 d1 = conjugate(d2);",
+              "  vec2 a = vec2(d1.x, -d1.y/h);",
+              "  vec2 b = d2.y * gamma / h;",
+              "  vec2 c = conjugate(b);",
+              "  vec2 d = conjugate(a);",
+              "  return divide(product(a, z) + b, product(c, z) + d);",
+              "}",
+              "",
+              "const float sqrt2 = sqrt(2.0);",
+              "const vec2 c1 = vec2(sqrt2, 0.0);",
+              "const vec2 c2 = vec2(0.0, sqrt2);",
+              "const vec2 c3 = vec2(-sqrt2, 0.0);",
+              "const vec2 c4 = vec2(0.0, -sqrt2);",
+              "const vec2 c5 = vec2(0.0, 0.0);",
+              "const float R2 = 1.0;",
+              "const float r2 = (sqrt2-1.0)*(sqrt2-1.0);",
+              "",
+              "float squaredLength(vec2 v) {",
+              "  return v.x*v.x + v.y*v.y;",
+              "}",
+              "",
+              "vec2 iota(vec2 pole, float k, vec2 M) {",
+              "  vec2 pole_M = M - pole;",
+              "  return pole + k/squaredLength(pole_M) * pole_M;",
+              "}",
+              "",
+              "bool contains(vec2 c, float r2, vec2 M) {",
+              "  return squaredLength(M-c) < r2;",
+              "}",
+              "",
+              "vec3 color(vec2 M, int itr) {",
+              "  float s = 0.08 * (4.0-length(M)) + float(itr); ",
+              "  float arg = pi * s / 20.0 - 3.74;",
+              "  return sin(vec3(arg - pi, arg - 3.5*pi, arg - 3.6*pi)) * 0.49 + 0.5;",
+              "}",
+              "",
+              "vec3 g(vec2 M) {",
+              "  int itr = 0;",
+              "  for(int i=0; i < 50; i++) {",
+              "    if(contains(c1, R2, M)) {",
+              "      M = iota(c1, R2, M);",
+              "      itr += 1;",
+              "    }else if(contains(c2, R2, M)) {",
+              "      M = iota(c2, R2, M);",
+              "      itr += 1;",
+              "    }else if(contains(c3, R2, M)) {",
+              "      M = iota(c3, R2, M);",
+              "      itr += 1;",
+              "    }else if(contains(c4, R2, M)) {",
+              "      M = iota(c4, R2, M);",
+              "      itr += 1;",
+              "    }else if(contains(c5, r2, M)) {",
+              "      M = iota(c5, r2, M);",
+              "      itr += 1;",
+              "    }else{",
+              "      break;",
+              "    }",
+              "  }",
+              "  return color(M, itr);",
+              "}",
+              "",
+              "void main(void) {",
+              "  float t = 1.0 + (iAnim ? sin(iGlobalTime) : sin(iFixedTime));",
+              "  vec2 z0 = vec2(",
+              "    (xmax - xmin) * gl_FragCoord.x/iResolution.x + xmin,",
+              "    (ymax - ymin) * gl_FragCoord.y/iResolution.y + ymin",
+              "  );",
+              "  vec2 z = mobius(z0, vec2(0.8,0.2), t);",
+              "  gl_FragColor = vec4(g(z), 1.0);",
+              "}"
+            ].join("\n");
+            break;
+
+          case "smoke":
+            fragmentShader = [
+              "uniform vec2 iResolution;",
+              "uniform float iGlobalTime;",
+              "uniform float iFixedTime;",
+              "uniform bool iAnim;",
+              "uniform float xmin;",
+              "uniform float xmax;",
+              "uniform float ymin;",
+              "uniform float ymax;",
+              "",
+              "float random(vec2 _st) {",
+              "  return fract(sin(dot(_st, vec2(12.9898,78.233))) * 43758.5453123);",
+              "}",
+              "",
+              "float noise(vec2 _st) {",
+              "  vec2 i = floor(_st);",
+              "  vec2 f = fract(_st);",
+              "  float a = random(i);",
+              "  float b = random(i + vec2(1.0, 0.0));",
+              "  float c = random(i + vec2(0.0, 1.0));",
+              "  float d = random(i + vec2(1.0, 1.0));",
+              "  vec2 u = f * f * (3.0 - 2.0 * f);",
+              "  return mix(a, b, u.x) + (c - a)*u.y*(1.0 - u.x) + (d - b)*u.x*u.y;",
+              "}",
+              "",
+              "float fbm(vec2 _st) {",
+              "  float v = 0.0;",
+              "  float a = 0.5;",
+              "  vec2 shift = vec2(100.0);",
+              "  // Rotate to reduce axial bias",
+              "  mat2 rot = mat2(cos(0.5), sin(0.5),",
+              "                  -sin(0.5), cos(0.50));",
+              "  for(int i = 0; i < 5; ++i) {",
+              "    v += a * noise(_st);",
+              "    _st = rot * _st * 2.0 + shift;",
+              "    a *= 0.5;",
+              "  }",
+              "  return v;",
+              "}",
+              "",
+              "void main(void) {",
+              "  float t = 1.0 + (iAnim ? sin(iGlobalTime) : sin(iFixedTime));",
+              "  vec2 st0 = vec2(",
+              "    (xmax - xmin) * gl_FragCoord.x/iResolution.x + xmin,",
+              "    (ymax - ymin) * gl_FragCoord.y/iResolution.y + ymin",
+              "  );",
+              "  float l = length(st0);",
+              "  vec2 st = vec2(",
+              "    cos(l*t)*st0.x + sin(l*t)*st0.y,",
+              "    -sin(l*t)*st0.x + cos(l*t)*st0.y",
+              "  );",
+              "",
+              "  vec3 color;",
+              "",
+              "  vec2 q = vec2(fbm(st), fbm(st + vec2(1.0)));",
+              "",
+              "  vec2 r = vec2(",
+              "    fbm(st + 1.0*q + vec2(1.7,9.2)+ 0.55*iGlobalTime),",
+              "    fbm(st + 1.0*q + vec2(8.3,2.8)+ 0.526*iGlobalTime)",
+              "  );",
+              "",
+              "  float f = fbm(st+r);",
+              "",
+              "  color = mix(vec3(0.101961,0.619608,0.666667),",
+              "              vec3(0.666667,0.666667,0.498039),",
+              "              clamp((f*f)*4.0,0.0,1.0));",
+              "",
+              "  color = mix(color,",
+              "              vec3(0,0,0.164706),",
+              "              clamp(length(q),0.0,1.0));",
+              "",
+              "  color = mix(color,",
+              "              vec3(0.666667,1,1),",
+              "              clamp(length(r.x),0.0,1.0));",
+              "",
+              "  gl_FragColor = vec4((f*f*f+0.6*f*f+0.5*f)*color,1.0);",
+              "}"
+            ].join("\n");
+            break;
+
+          case "plasma":
+            fragmentShader = [
+              "uniform vec2 iResolution;",
+              "uniform float iGlobalTime;",
+              "uniform float iFixedTime;",
+              "uniform bool iAnim;",
+              "uniform vec2 iMouse;",
+              "uniform float iScale;",
+              "",
+              "float lerp(float t, float a, float b) {",
+              "  return a + t*(b-a);",
+              "}",
+              "float norm(float t, float a, float b) {",
+              "  return (t-a)/(b-a);",
+              "}",
+              "float map(float t, float e1, float s1, float e2, float s2) {",
+              "  return lerp(norm(t, e1, s1), e2, s2);",
+              "}",
+              "",
+              "vec3 viridis(float u) {",
+              "  return vec3(",
+              "    70.0 - 18.0*u + 449.0*u*u - 3461.0*u*u*u + 6058.0*u*u*u*u - 2847.0*u*u*u*u*u,",
+              "    4.0 + 320.0*u - 50.0*u*u - 40.0*u*u*u,",
+              "    85.0 + 346.0*u + 119.0*u*u - 5374.0*u*u*u + 15427.0*u*u*u*u - 17627.0*u*u*u*u*u + 7057.0*u*u*u*u*u*u",
+              "  ) / 255.0;",
+              "}",
+              "",
+              "vec2 product(vec2 a, vec2 b) {",
+              "  return vec2(a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x);",
+              "}",
+              "vec2 conjugate(vec2 a) {",
+              "  return vec2(a.x, -a.y);",
+              "}",
+              "vec2 divide(vec2 a, vec2 b) {",
+              "  return vec2(a.x*b.x+a.y*b.y, a.y*b.x-a.x*b.y) / (b.x*b.x+b.y*b.y);",
+              "}",
+              "",
+              "float pi = 3.1415926535897932384626433832795;",
+              "float pio2 = pi/2.0;",
+              "",
+              "vec2 mobius(vec2 z, vec2 gamma, float t) {",
+              "  float g2 = gamma.x*gamma.x + gamma.y*gamma.y;",
+              "  float h = sqrt(1.0 - g2);",
+              "  vec2 d2 = pow(h, t) * vec2(cos(t*pio2), sin(t*pio2));",
+              "  vec2 d1 = conjugate(d2);",
+              "  vec2 a = vec2(d1.x, -d1.y/h);",
+              "  vec2 b = d2.y * gamma / h;",
+              "  vec2 c = conjugate(b);",
+              "  vec2 d = conjugate(a);",
+              "  return divide(product(a, z) + b, product(c, z) + d);",
+              "}",
+              "",
+              "float plasma(float x, float y, float w, float h) {",
+              "  float xx = x - w/2.0;",
+              "  float yy = y - h/2.0;",
+              "  return",
+              "    (128.0 + (128.0 * sin(x/16.0))",
+              "   + 128.0 + (128.0 * sin(y/32.0))",
+              "   + 128.0 + (128.0 * sin(sqrt(xx*xx + yy*yy) / 8.0))",
+              "   + 128.0 + (128.0 * sin(sqrt(x*x + y*y) / 8.0))) / 1024.0;",
+              "}",
+              "",
+              "vec2 gamma = vec2(0.01, 0.02);",
+              "",
+              "void main(void) {",
+              "  vec2 z = vec2(",
+              "    map(gl_FragCoord.x, 0.0, iResolution.x, -128.0, 128.0),",
+              "    map(gl_FragCoord.y, 0.0, iResolution.y, -128.0, 128.0)",
+              "  );",
+              "  float w = map(iMouse.x, 0.0, iResolution.x, -200.0, 200.0);",
+              "  float h = map(iMouse.y, 0.0, iResolution.y, -200.0, 200.0);",
+              "  float t = iAnim ? iGlobalTime : iFixedTime;",
+              "  vec2 zprime = iScale * mobius(z/iScale, gamma, 1.0 + cos(t));",
+              "  float u = plasma(zprime.x, zprime.y, w, h);",
+              "  gl_FragColor = vec4(viridis(u*u*u), 1.0);",
+              "}"
+            ].join("\n");
         }
 
         var filter = new PIXI.Filter(null, fragmentShader);
-        filter.uniforms.iResolution = [app.screen.width, app.screen.height];
+        filter.uniforms.iResolution = {
+          x: app.screen.width,
+          y: app.screen.height
+        };
         if(x.shader !== "biomorph1") {
           filter.uniforms.iGlobalTime = 0;
-          filter.uniforms.iFixedTime = 0;
+          filter.uniforms.iFixedTime = -Math.PI / 2;
           filter.uniforms.iAnim = false;
         }
-        filter.uniforms.iMouse = {
-          x: app.screen.width / 2,
-          y: app.screen.height / 2
-        };
-
-        if(x.shader === "thorn" || x.shader === "thorn-color") {
-          filter.uniforms.iScale = 1;
+        if(x.shader !== "apollony" && x.shader !== "smoke") {
+          filter.uniforms.iMouse = {
+            x: app.screen.width / 2,
+            y: app.screen.height / 2
+          };
         }
 
-        if(x.shader === "sweet") {
+        if(x.shader === "thorn" || x.shader === "thorn-color" || x.shader === "plasma") {
+          filter.uniforms.iScale = 1;
+        } else if(x.shader === "sweet") {
           var xmin = -4, xmax = 4, ymin = -3, ymax = 5;
           filter.uniforms.x0 = (xmin + xmax) / 2;
           filter.uniforms.y0 = (ymin + ymax) / 2;
@@ -494,15 +757,29 @@ HTMLWidgets.widget({
           filter.uniforms.xmax = xmax;
           filter.uniforms.ymin = ymin;
           filter.uniforms.ymax = ymax;
+        } else if(x.shader === "apollony") {
+          var xmin = -1.25, xmax = 1.25, ymin = -1.25, ymax = 1.25;
+          filter.uniforms.xmin = xmin;
+          filter.uniforms.xmax = xmax;
+          filter.uniforms.ymin = ymin;
+          filter.uniforms.ymax = ymax;
+        } else if(x.shader === "smoke") {
+          var xmin = -3, xmax = 3, ymin = -3, ymax = 3;
+          filter.uniforms.xmin = xmin;
+          filter.uniforms.xmax = xmax;
+          filter.uniforms.ymin = ymin;
+          filter.uniforms.ymax = ymax;
         }
 
-        el.onmousemove = function(evt) {
-          var dims = evt.target.getBoundingClientRect();
-          filter.uniforms.iMouse = {
-            x: evt.offsetX / dims.width * 1000,
-            y: evt.offsetY / dims.height * 1000
+        if(x.shader !== "apollony" && x.shader !== "smoke") {
+          el.onmousemove = function(evt) {
+            var dims = evt.target.getBoundingClientRect();
+            filter.uniforms.iMouse = {
+              x: evt.offsetX / dims.width * 1000,
+              y: evt.offsetY / dims.height * 1000
+            };
           };
-        };
+        }
 
         if(x.shader !== "biomorph1") {
           el.onclick = function(evt) {
@@ -511,12 +788,34 @@ HTMLWidgets.widget({
           };
         }
 
-        if(x.shader === "thorn" || x.shader === "thorn-color") {
+        if(x.shader === "thorn" || x.shader === "thorn-color" || x.shader === "plasma") {
           var hamster = Hamster(el);
           var factor0 = 1.001;
           hamster.wheel(function(event, delta, deltaX, deltaY) {
             var factor = Math.max(0.1, Math.pow(factor0, deltaY));
             filter.uniforms.iScale /= factor;
+          });
+        } else if(x.shader === "apollony" || x.shader === "smoke") {
+          var hamster = Hamster(el);
+          var zoom0 = 1.001;
+          hamster.wheel(function(event, delta, deltaX, deltaY) {
+            var ex = event.originalEvent.clientX;
+            var ey = event.originalEvent.clientY;
+            var zoom = Math.pow(zoom0, deltaY);
+            var sx = (filter.uniforms.xmax - filter.uniforms.xmin) / filter.uniforms.iResolution.x;
+            var sy = (filter.uniforms.ymax - filter.uniforms.ymin) / filter.uniforms.iResolution.y;
+            var dx = ex - filter.uniforms.iResolution.x / 2;
+            var dy = filter.uniforms.iResolution.y / 2 - ey;
+            sx /= zoom;
+            sy /= zoom;
+            var midx = (filter.uniforms.xmin + filter.uniforms.xmax) / 2 + (zoom - 1) * dx * sx;
+            var midy = (filter.uniforms.ymin + filter.uniforms.ymax) / 2 + (zoom - 1) * dy * sy;
+            var rangex = (filter.uniforms.xmax - filter.uniforms.xmin) / zoom;
+            var rangey = (filter.uniforms.ymax - filter.uniforms.ymin) / zoom;
+            filter.uniforms.xmax = (rangex + 2 * midx) / 2;
+            filter.uniforms.ymax = (rangey + 2 * midy) / 2;
+            filter.uniforms.xmin = filter.uniforms.xmax - rangex;
+            filter.uniforms.ymin = filter.uniforms.ymax - rangey;
           });
         }
 
@@ -530,7 +829,10 @@ HTMLWidgets.widget({
         function onresize(event) {
           if(app.resize) app.resize();
           container.filterArea = app.screen;
-          filter.uniforms.iResolution = [app.screen.width, app.screen.height];
+          filter.uniforms.iResolution = {
+            x: app.screen.width,
+            y: app.screen.height
+          };
         }
         window.addEventListener("resize", onresize, false);
 

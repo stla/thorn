@@ -9,7 +9,8 @@ thorn(shader, width = NULL, height = NULL, elementId = NULL)
 \arguments{
 \item{shader}{the name of the shader, one of \code{"thorn"},
 \code{"thorn-color"}, \code{"ikeda"}, \code{"sweet"}, \code{"biomorph1"},
-\code{"biomorph2"}, or \code{"biomorph3"}}
+\code{"biomorph2"}, \code{"biomorph3"}, \code{"apollony"}, \code{"smoke"},
+\code{"plasma"}}
 
 \item{width, height}{a valid CSS measurement (like \code{"100\%"},
 \code{"400px"}, \code{"auto"}) or a number, which will be coerced to a
@@ -23,8 +24,9 @@ Creates a HTML widget displaying a shader.
 \examples{
 library(thorn)
 thorn("ikeda") # click on the shader to animate it
+thorn("thorn") # you can also use the mouse wheel on this one
 
-# four shaders: ####
+# four shaders ####
 library(htmltools)
 
 hw1 <- thorn("thorn-color", width = "50vw", height = "50vh")
